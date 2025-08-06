@@ -25,7 +25,7 @@ export const middleware = paymentMiddleware(
     },
   },
   {
-    url: "<https://x402.org/facilitator>", // Facilitador de testnet
+    url: "https://x402.org/facilitator", // Facilitador de testnet
   },
 );
 
