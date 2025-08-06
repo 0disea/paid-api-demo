@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Obtener cuenta de wallet
+    // Obtener cuenta de wallet CDP
     const account = await getWalletAccount();
 
     // Crear instancia axios con interceptor de pago
@@ -28,7 +28,8 @@ export async function POST(request: NextRequest) {
           "Content-Type": "application/json",
         },
       }),
-      account as any, // TODO: Fix wallet type compatibility
+      // @ts-expect-error CDP account has signing methods but doesn't match viem's SignerWallet type exactly
+      account,
     );
 
     // Hacer solicitud a la API de validación

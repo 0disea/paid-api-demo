@@ -28,14 +28,44 @@ export async function getWalletAccount() {
 
 export async function getWalletBalance() {
   const account = await getWalletAccount();
+  const cdp = await initializeCDP();
 
-  // Para propósitos de demo, devolver saldo simulado
-  // En producción, consultarías el saldo real
-  return {
-    address: account.address,
-    ethBalance: 0.1, // Saldo simulado
-    usdcBalance: 10, // Saldo USDC simulado
-  };
+  try {
+    // Obtener balances reales usando el SDK CDP
+    const result = await cdp.evm.listTokenBalances({
+      address: account.address,
+      network: "base-sepolia",
+    });
+
+    // Buscar balance de ETH y USDC
+    let ethBalance = 0;
+    let usdcBalance = 0;
+
+    // Iterar sobre los balances según la documentación
+    result.balances.forEach((balance) => {
+      if (balance.token.symbol === "ETH") {
+        // Convertir de wei a ETH (amount es bigint)
+        ethBalance = Number(balance.amount.amount) / 1e18;
+      } else if (balance.token.symbol === "USDC") {
+        // USDC tiene 6 decimales (amount es bigint)
+        usdcBalance = Number(balance.amount.amount) / 1e6;
+      }
+    });
+
+    return {
+      address: account.address,
+      ethBalance,
+      usdcBalance,
+    };
+  } catch (error) {
+    console.error("Error al obtener balances:", error);
+    // Devolver valores por defecto en caso de error
+    return {
+      address: account.address,
+      ethBalance: 0,
+      usdcBalance: 0,
+    };
+  }
 }
 
 export async function fundWallet() {
