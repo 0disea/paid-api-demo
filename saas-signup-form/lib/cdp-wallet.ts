@@ -1,8 +1,8 @@
 import { CdpClient } from "@coinbase/cdp-sdk";
-import { toAccount } from "viem/accounts";
+import type { EvmServerAccount } from "@coinbase/cdp-sdk";
 
 let cdpInstance: CdpClient | null = null;
-let walletAccount: any = null;
+let walletAccount: EvmServerAccount | null = null;
 
 export async function initializeCDP() {
   if (!cdpInstance) {
@@ -19,11 +19,8 @@ export async function getWalletAccount() {
   if (!walletAccount) {
     const cdp = await initializeCDP();
 
-    // Crear cuenta
-    const cdpAccount = await cdp.evm.createAccount();
-
-    // Convertir a cuenta viem para compatibilidad con x402
-    walletAccount = toAccount(cdpAccount);
+    // Crear cuenta EVM
+    walletAccount = await cdp.evm.createAccount();
   }
 
   return walletAccount;

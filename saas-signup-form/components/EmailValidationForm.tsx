@@ -62,7 +62,8 @@ export function EmailValidationForm() {
         );
       }
     } catch (err) {
-      setError(err.message || "Error al validar email");
+      const errorMessage = err instanceof Error ? err.message : "Error al validar email";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

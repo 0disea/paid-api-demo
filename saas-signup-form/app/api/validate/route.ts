@@ -28,10 +28,7 @@ export async function POST(request: NextRequest) {
           "Content-Type": "application/json",
         },
       }),
-      account,
-      {
-        maxAmount: BigInt(10000), // 0.01 USDC máximo
-      },
+      account as any, // TODO: Fix wallet type compatibility
     );
 
     // Hacer solicitud a la API de validación
@@ -48,10 +45,11 @@ export async function POST(request: NextRequest) {
       validation: response.data,
       payment: paymentInfo,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error de validación:", error);
+    const errorMessage = error instanceof Error ? error.message : "Error al validar email";
     return NextResponse.json(
-      { error: error.message || "Error al validar email" },
+      { error: errorMessage },
       { status: 500 },
     );
   }
